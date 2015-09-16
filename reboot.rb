@@ -10,10 +10,10 @@ class Router
 
   def reboot
     req = new_request "/userRpm/SysRebootRpm.htm?Reboot=%D6%D8%C6%F4%C2%B7%D3%C9%C6%F7"
+    #TODO
+    #req['Referer'] = 
 
-    @http.request req do |res|
-      File.open("192.html", "w") { |file| file.write res.body }
-    end
+    @http.request req
   end
 
   #index is useless, so comment these lines
