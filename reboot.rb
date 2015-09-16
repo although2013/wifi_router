@@ -2,8 +2,8 @@ require 'net/http'
 
 
 class Router
-  def initialize(host, name, pass, options = {})
-    @http = Net::HTTP.new(host, 80)
+  def initialize(host, port, name, pass, options = {})
+    @http = Net::HTTP.new(host, port)
     @name = name
     @pass = pass
   end
@@ -82,7 +82,7 @@ end
 
 
 
-router = Router.new("192.168.1.1", 'admin', 'admin')
+router = Router.new("192.168.1.1", 80, 'admin', 'admin')
 router.status
 router.wlan_status
 router.wlan_security_status
