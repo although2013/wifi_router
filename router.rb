@@ -88,7 +88,7 @@ class Router
     end
 
     def internet_connected?(s)
-      s[2][0] != "0" && ((Time.parse s[12]) > (Time.parse "00:00:00"))
+      ((Time.parse s[12]) > (Time.parse "00:00:00")) || s[2][0] != "0"
     end
 end
 
@@ -99,9 +99,17 @@ router.status
 router.wlan_status
 router.wlan_security_status
 
-puts "Connected? #{router.internet?}"
+puts "\n#{router.internet? ? "Fly on Internet!" : "NO Internet!"}"
 
+if not router.internet?
+  puts "\n....REBOOTING...."
+  router.reboot
+  20.times do
+    print "."
+    sleep(0.3)
+  end
+else
+  print "\n回车键退出..."
+  gets
+end
 
-
-print "\n回车键退出..."
-gets
