@@ -8,6 +8,9 @@ class Router
     @name = name
     @pass = pass
     @internet = false
+
+    @know_macs = load_know_mac
+    @my_macs = load_my_mac
   end
 
   def reboot
@@ -16,14 +19,6 @@ class Router
 
     @http.request req
   end
-
-  #index is useless, so comment these lines
-  #def index
-  #  req = new_request '/'
-  #  @http.request req do |res|
-  #    File.open("192.html", "w") { |file| file.write res.body }
-  #  end
-  #end
 
   def status
     req = new_request "/userRpm/StatusRpm.htm"
@@ -36,11 +31,11 @@ class Router
     s = status[0][4] % 60
     m = status[0][4] % 3600 / 60
     h = status[0][4] / 3600
-    puts "当前软件版本 #{status[0][5]}"
-    puts "当前硬件版本 #{status[0][6]}"
+    puts "软件版本  #{status[0][5]}"
+    puts "硬件版本  #{status[0][6]}"
     puts "SSID号：  #{status[2][1]}"
-    puts "MAC地址：  #{status[3][1]}"
-    puts "IP地址： #{status[3][2]}"
+    puts "MAC地址： #{status[3][1]}"
+    puts "IP地址：  #{status[3][2]}"
     puts "上网时间：#{status[3][12]}"
     puts "运行时间：#{h}小时#{m}分#{s}秒"
   end
@@ -53,7 +48,13 @@ class Router
 
     puts "当前所连接的主机: "
     status[1][0..-3].each_slice(7) do |s|
-      puts "#{s}"
+      if @my_macs.include? s[0]
+        puts "#{s[0]} 正在使用的设备"
+      elsif x = @know_macs.find {|h| h[:value] == s[0]}
+        puts "#{s[0]} #{x[:name]}"
+      else
+        puts s[0]
+      end
     end
   end
 
@@ -65,7 +66,6 @@ class Router
 
     puts "WiFi密码：" + status[0][9]
   end
-
 
   def internet?
     @internet
@@ -90,6 +90,20 @@ class Router
     def internet_connected?(s)
       ((Time.parse s[12]) > (Time.parse "00:00:00")) || s[2][0] != "0"
     end
+
+    def load_know_mac
+      File.foreach("macs.txt").map do |line|
+        a = line.force_encoding("UTF-8").split
+        {:name => a[1], :value => a[0]}
+      end
+    end
+
+    def load_my_mac
+      str = `getmac /v`
+      str = str.encode(Encoding.find("UTF-8"),Encoding.find("GBK"))
+      str.scan(/无线.+((?:\w\w-){5}\w\w)/).map{ $1 }
+    end
+
 end
 
 
@@ -100,6 +114,8 @@ router.wlan_status
 router.wlan_security_status
 
 puts "\n#{router.internet? ? "Fly on Internet!" : "NO Internet!"}"
+
+
 
 if not router.internet?
   puts "\n....REBOOTING...."
