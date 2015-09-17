@@ -1,4 +1,5 @@
 require 'net/http'
+require 'time'
 
 
 class Router
@@ -6,12 +7,12 @@ class Router
     @http = Net::HTTP.new(host, port)
     @name = name
     @pass = pass
+    @internet = false
   end
 
   def reboot
     req = new_request "/userRpm/SysRebootRpm.htm?Reboot=%D6%D8%C6%F4%C2%B7%D3%C9%C6%F7"
-    #TODO
-    #req['Referer'] = 
+    req['Referer'] = "http://192.168.1.1/userRpm/SysRebootRpm.htm"
 
     @http.request req
   end
@@ -29,6 +30,8 @@ class Router
     req['Referer'] = 'http://192.168.1.1/'
     res = @http.request req
     status = scan_js_array res.body
+
+    @internet = true if internet_connected?(status[3])
 
     s = status[0][4] % 60
     m = status[0][4] % 3600 / 60
@@ -64,6 +67,11 @@ class Router
   end
 
 
+  def internet?
+    @internet
+  end
+
+
   private
     def new_request(path)
       req = Net::HTTP::Get.new path
@@ -78,6 +86,10 @@ class Router
         eval s
       end
     end
+
+    def internet_connected?(s)
+      s[2][0] != "0" && ((Time.parse s[12]) > (Time.parse "00:00:00"))
+    end
 end
 
 
@@ -86,6 +98,9 @@ router = Router.new("192.168.1.1", 80, 'admin', 'admin')
 router.status
 router.wlan_status
 router.wlan_security_status
+
+puts "Connected? #{router.internet?}"
+
 
 
 print "\n回车键退出..."
