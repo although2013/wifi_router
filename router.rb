@@ -99,9 +99,16 @@ class Router
     end
 
     def load_my_mac
-      str = `getmac /v`
-      str = str.encode(Encoding.find("UTF-8"),Encoding.find("GBK"))
-      str.scan(/无线.+((?:\w\w-){5}\w\w)/).map{ $1 }
+      #OS windows or *nix
+      if (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+        str = `getmac /v`
+        str = str.encode(Encoding.find("UTF-8"),Encoding.find("GBK"))
+        #is this wrong?
+        str.scan(/无线.+((?:\w\w-){5}\w\w)/).map{ $1 }
+      else
+        str = `ifconfig`
+        str.scan(/(?:\w\w:){5}\w\w/).map {|mac| mac.gsub(":", "-").upcase }
+      end
     end
 
 end
