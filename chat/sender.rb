@@ -18,11 +18,15 @@ class Sender
 end
 
 
-s = Sender.new('<broadcast>', 8989)
-#s = Sender.new('127.0.0.1', 8989)
+#s = Sender.new('<broadcast>', 8989)
+##s = Sender.new('127.0.0.1', 8989)
+#
+#s.send("Hellosdfsdfsdfsdf")
+#
+#
+#s.close
+#
 
-s.send("Hellosdfsdfsdfsdf")
-
-
-s.close
-
+t = TCPSocket.new('localhost', '8389')
+t.gets
+t.close
