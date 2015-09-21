@@ -65,7 +65,7 @@ class Router
         if e == s[0]
           print "  "
           printf("%-8s", size_of_bits(sys_s[0][i+1], ""))
-          printf("%-8s", size_of_bits(sys_s[0][i+4], "/s"))
+          printf("%-8s", size_of_bits(sys_s[0][i+3], "/s"))
         end
       end
 
