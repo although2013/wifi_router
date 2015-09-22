@@ -2,6 +2,8 @@
 
 require 'wifi_router_info'
 
+Dir.chdir(File.dirname(__FILE__) + "/../")
+
 config = eval File.read("config.txt")
 
 router = Router.new(config)

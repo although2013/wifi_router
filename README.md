@@ -1,5 +1,14 @@
 可以查看一些路由器的信息，然后如果没网就会重启一次
 
+使用方法：
+```
+$ gem install wifi_router_info
+$ route
+```
+
+
+
+效果：
 ```
 硬件版本  WR742N 5.0 00000000
 SSID号：  nibaba
