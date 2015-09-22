@@ -3,7 +3,7 @@
 使用方法：
 ```
 $ gem install wifi_router_info
-$ route
+$ rou
 ```
 
 
