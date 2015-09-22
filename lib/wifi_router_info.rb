@@ -1,9 +1,8 @@
 require 'net/http'
 require 'time'
-require 'pry'
 
 class Router
-  def initialize(params)
+  def initialize params
     @http = Net::HTTP.new(params[:host], params[:port])
     @name = params[:name]
     @pass = params[:pass]
@@ -58,6 +57,7 @@ class Router
 
 
     puts "当前所连接的主机: "
+    puts "MAC地址            下载    上传    下载速度  上传速度\n"
     w_status[1][0..-3].each_slice(7) do |s|
       print s[0]
 
@@ -65,7 +65,9 @@ class Router
         if e == s[0]
           print "  "
           printf("%-8s", size_of_bits(sys_s[0][i+1], ""))
-          printf("%-8s", size_of_bits(sys_s[0][i+3], "/s"))
+          printf("%-8s", size_of_bits(sys_s[0][i+2], ""))
+          printf("%-10s", size_of_bits(sys_s[0][i+3], "/s"))
+          printf("%-10s", size_of_bits(sys_s[0][i+4], "/s"))
         end
       end
 
@@ -88,13 +90,13 @@ class Router
 
 
   private
-    def new_request(path)
+    def new_request path
       req = Net::HTTP::Get.new path
       req.basic_auth @name, @pass
       req
     end
 
-    def scan_js_array(html)
+    def scan_js_array html
       html = html.gsub("\n", "").gsub("</script>", "\n")
       status = html.scan(/var\s+\w+\s*=new\s+Array.+\);/).map do |e|
         s = e.gsub("new Array(", "[").gsub(");", "]").gsub("var ", "").gsub("\\\"", "\"")
@@ -102,7 +104,7 @@ class Router
       end
     end
 
-    def internet_connected?(s)
+    def internet_connected? s
       ((Time.parse s[12]) > (Time.parse "00:00:00")) || s[2][0] != "0"
     end
 
@@ -132,39 +134,18 @@ class Router
       scan_js_array res.body
     end
 
-    def size_of_bits bits, per_second
+    def size_of_bits(bits, per_second)
       bits = bits.to_f
       case bits
       when 0...1024
-        "#{bits.round(0)}B"              + per_second
+        bits.round(0).to_s             + "B"  + per_second
       when 1024...(1024**2)
-        "#{(bits/1024).round(0)}KB"      + per_second
+        (bits/1024).round(0).to_s      + "KB" + per_second
       when (1024**2)...(1024**3)
-        "#{(bits/(1024**2)).round(1)}MB" + per_second
+        (bits/(1024**2)).round(1).to_s + "MB" + per_second
       else
-        "#{(bits/(1024**3)).round(2)}GB" + per_second
+        (bits/(1024**3)).round(2).to_s + "GB" + per_second
       end
     end
 
-end
-
-
-config = eval File.read("config.txt")
-
-router = Router.new(config)
-router.status_print
-
-
-if router.internet?
-  puts "\nFly on Internet!"
-  print "\n回车键退出..."
-  gets
-else
-  puts "\nNO Internet!"
-  puts "\n.....REBOOTING....."
-  router.reboot
-  19.times do
-    print "."
-    sleep(0.3)
-  end
 end

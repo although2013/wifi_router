@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require 'wifi_router_info'
+
+config = eval File.read("config.txt")
+
+router = Router.new(config)
+router.status_print
+
+
+if router.internet?
+  puts "\nFly on Internet!"
+  print "\n回车键退出..."
+  gets
+else
+  puts "\nNO Internet!"
+  puts "\n.....REBOOTING....."
+  router.reboot
+  19.times do
+    print "."
+    sleep(0.3)
+  end
+end
