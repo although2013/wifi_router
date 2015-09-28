@@ -68,6 +68,7 @@ class Router
           printf("%-8s", size_of_bits(sys_s[0][i+2], ""))
           printf("%-10s", size_of_bits(sys_s[0][i+3], "/s"))
           printf("%-10s", size_of_bits(sys_s[0][i+4], "/s"))
+          break
         end
       end
 

@@ -11,9 +11,7 @@ router.status_print
 
 
 if router.internet?
-  puts "\nFly on Internet!"
-  print "\n回车键退出..."
-  gets
+  puts "\nFly on Internet!\n"
 else
   puts "\nNO Internet!"
   puts "\n.....REBOOTING....."
